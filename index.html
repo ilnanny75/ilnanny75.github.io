@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🦊 FoxHome</title>
+
+<!-- Favicon SVG inline — visibile nella schorciatoia home -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231a1a1a'/><text y='48' x='8' font-size='48'>🦊</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231a1a1a'/><text y='48' x='8' font-size='48'>🦊</text></svg>">
+
+<!-- PWA meta per aggiunta a home screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FoxHome">
+<meta name="application-name" content="FoxHome">
+<meta name="theme-color" content="#1a1a1a">
+
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -480,7 +491,7 @@
 <div class="search-wrap">
   <div class="search-label">Cerca sul web</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cerca o inserisci URL..."
+    <input type="text" id="searchInput" placeholder="Cerca con Perplexity o inserisci URL..."
       onkeydown="if(event.key==='Enter') doSearch()">
     <button onclick="doSearch()">
       <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -694,7 +705,7 @@ function doSearch() {
   if (!q) return;
   const url = q.startsWith('http') || q.includes('.')
     ? (q.startsWith('http') ? q : 'https://' + q)
-    : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+    : `https://www.perplexity.ai/search?q=${encodeURIComponent(q)}`;
   window.open(url, '_blank');
 }
 
