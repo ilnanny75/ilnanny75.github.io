@@ -4,518 +4,135 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🦊 FoxHome</title>
-
-<!-- Favicon SVG inline — visibile nella schorciatoia home -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231a1a1a'/><text y='48' x='8' font-size='48'>🦊</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231a1a1a'/><text y='48' x='8' font-size='48'>🦊</text></svg>">
-
-<!-- PWA meta per aggiunta a home screen -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="FoxHome">
-<meta name="application-name" content="FoxHome">
 <meta name="theme-color" content="#1a1a1a">
-
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0f0f0f;
-    --surface:   #1a1a1a;
-    --surface2:  #242424;
-    --border:    #2e2e2e;
-    --orange:    #ff6611;
-    --orange2:   #ff8844;
-    --text:      #f0f0f0;
-    --text2:     #888;
-    --text3:     #555;
-    --green:     #4caf50;
-    --radius:    14px;
+    --bg:#0f0f0f; --surface:#1a1a1a; --surface2:#242424;
+    --border:#2e2e2e; --orange:#ff6611; --orange2:#ff8844;
+    --text:#f0f0f0; --text2:#888; --text3:#555; --radius:14px;
   }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(255,102,17,.06) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(255,102,17,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(26,26,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .logo{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+  .logo span{color:var(--orange)}
+  .header-right{display:flex;align-items:center;gap:10px}
+  .clock{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text2);letter-spacing:.05em}
+  .btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;transition:all .2s;white-space:nowrap}
+  .btn:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.08)}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  .search-wrap{position:relative;z-index:1;padding:36px 24px 16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .search-label{font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text3)}
+  .search-box{width:100%;max-width:620px;position:relative}
+  .search-box input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 50px 13px 18px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s}
+  .search-box input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,102,17,.12)}
+  .search-box input::placeholder{color:var(--text3)}
+  .search-box button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--orange);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+  .search-box button:hover{background:var(--orange2)}
+  .search-box button svg{width:16px;height:16px;fill:white}
 
-  /* Sfondo animato */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(255,102,17,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 60% at 80% 80%, rgba(255,102,17,0.04) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
+  .engine-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:620px;width:100%}
+  .engine-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:5px 12px;border-radius:20px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.74rem;font-weight:600;transition:all .2s}
+  .engine-btn:hover,.engine-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.1)}
 
-  /* ── HEADER ── */
-  header {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 32px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(26,26,26,0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    position: sticky;
-    top: 0;
-  }
+  .categories{position:relative;z-index:1;padding:4px 24px 8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .cat-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s}
+  .cat-btn:hover,.cat-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.08)}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  .logo span { color: var(--orange); }
+  .grid-wrap{position:relative;z-index:1;padding:18px 24px 48px}
+  .section-title{font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;text-decoration:none;color:var(--text);transition:all .2s;position:relative;animation:fadeIn .3s ease both}
+  .link-card:hover{border-color:var(--orange);background:var(--surface2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .link-icon{width:38px;height:38px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px}
+  .link-icon img{width:26px;height:26px;object-fit:contain}
+  .link-name{font-size:.72rem;font-weight:600;text-align:center;color:var(--text2);line-height:1.2;word-break:break-word}
+  .link-card .del-btn{display:none;position:absolute;top:4px;right:4px;background:rgba(255,50,50,.85);border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;color:white;align-items:center;justify-content:center}
+  body.admin-mode .link-card .del-btn{display:flex}
+  body.admin-mode .link-card{border-style:dashed}
+  .empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);font-size:.9rem}
 
-  .clock {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
-    color: var(--text2);
-    letter-spacing: 0.05em;
-  }
+  .admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
+  .admin-overlay.open{display:flex}
+  .admin-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:420px;animation:panelIn .25s ease}
+  @keyframes panelIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .admin-panel h2{font-size:1.1rem;font-weight:800;margin-bottom:20px}
+  .admin-panel h2 span{color:var(--orange)}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+  .form-group input,.form-group select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.85rem;outline:none;transition:border-color .2s}
+  .form-group input:focus{border-color:var(--orange)}
+  .form-group input::placeholder{color:var(--text3)}
+  .form-hint{font-size:.7rem;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace}
+  .btn-row{display:flex;gap:10px;margin-top:20px}
+  .btn-save{flex:1;background:var(--orange);border:none;border-radius:8px;padding:12px;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:background .2s}
+  .btn-save:hover{background:var(--orange2)}
+  .btn-cancel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 18px;color:var(--text2);font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s}
+  .btn-cancel:hover{border-color:var(--text2);color:var(--text)}
 
-  .btn-admin {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text2);
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-admin:hover {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: rgba(255,102,17,0.08);
-  }
+  footer{position:relative;z-index:1;text-align:center;padding:14px;border-top:1px solid var(--border);font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+  footer a{color:var(--orange);text-decoration:none}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface2);border:1px solid var(--orange);border-radius:10px;padding:10px 20px;font-size:.85rem;color:var(--text);z-index:999;transition:transform .3s ease;pointer-events:none}
+  .toast.show{transform:translateX(-50%) translateY(0)}
 
-  /* ── SEARCH BAR ── */
-  .search-wrap {
-    position: relative;
-    z-index: 1;
-    padding: 48px 32px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .search-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text3);
-  }
-
-  .search-box {
-    width: 100%;
-    max-width: 620px;
-    position: relative;
-  }
-
-  .search-box input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 50px 14px 18px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .search-box input:focus {
-    border-color: var(--orange);
-    box-shadow: 0 0 0 3px rgba(255,102,17,0.12);
-  }
-  .search-box input::placeholder { color: var(--text3); }
-
-  .search-box button {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--orange);
-    border: none;
-    border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .search-box button:hover { background: var(--orange2); }
-  .search-box button svg { width: 16px; height: 16px; fill: white; }
-
-  /* ── CATEGORIE ── */
-  .categories {
-    position: relative;
-    z-index: 1;
-    padding: 0 32px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 8px;
-  }
-
-  .cat-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text3);
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    letter-spacing: 0.03em;
-  }
-  .cat-btn:hover, .cat-btn.active {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: rgba(255,102,17,0.08);
-  }
-
-  /* ── GRIGLIA LINK ── */
-  .grid-wrap {
-    position: relative;
-    z-index: 1;
-    padding: 24px 32px 48px;
-  }
-
-  .section-title {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-  }
-
-  .link-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 8px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--text);
-    transition: all 0.2s;
-    position: relative;
-    animation: fadeIn 0.3s ease both;
-  }
-  .link-card:hover {
-    border-color: var(--orange);
-    background: var(--surface2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .link-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: var(--surface2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    font-size: 20px;
-  }
-  .link-icon img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-  }
-
-  .link-name {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    color: var(--text2);
-    line-height: 1.2;
-    word-break: break-word;
-  }
-
-  .link-card .del-btn {
-    display: none;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: rgba(255,50,50,0.8);
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    font-size: 11px;
-    color: white;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-  body.admin-mode .link-card .del-btn { display: flex; }
-  body.admin-mode .link-card { border-style: dashed; }
-
-  /* Empty state */
-  .empty {
-    grid-column: 1/-1;
-    text-align: center;
-    padding: 48px;
-    color: var(--text3);
-    font-size: 0.9rem;
-  }
-
-  /* ── PANNELLO ADMIN ── */
-  .admin-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-  .admin-overlay.open { display: flex; }
-
-  .admin-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px;
-    width: 100%;
-    max-width: 440px;
-    animation: panelIn 0.25s ease;
-  }
-  @keyframes panelIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  .admin-panel h2 {
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .admin-panel h2 span { color: var(--orange); }
-
-  .form-group {
-    margin-bottom: 16px;
-  }
-  .form-group label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 6px;
-  }
-  .form-group input, .form-group select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus, .form-group select:focus {
-    border-color: var(--orange);
-  }
-  .form-group input::placeholder { color: var(--text3); }
-  .form-group select option { background: var(--surface2); }
-
-  .form-hint {
-    font-size: 0.72rem;
-    color: var(--text3);
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 24px;
-  }
-
-  .btn-save {
-    flex: 1;
-    background: var(--orange);
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    color: white;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-save:hover { background: var(--orange2); }
-
-  .btn-cancel {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 20px;
-    color: var(--text2);
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
-
-  /* ── FOOTER ── */
-  footer {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 16px;
-    border-top: 1px solid var(--border);
-    font-size: 0.72rem;
-    color: var(--text3);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  footer a { color: var(--orange); text-decoration: none; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(60px);
-    background: var(--surface2);
-    border: 1px solid var(--orange);
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 0.85rem;
-    color: var(--text);
-    z-index: 999;
-    transition: transform 0.3s ease;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    header { padding: 14px 16px; }
-    .search-wrap { padding: 32px 16px 24px; }
-    .grid-wrap { padding: 16px 16px 32px; }
-    .categories { padding: 0 16px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
+  @media(max-width:600px){
+    header{padding:12px 14px}
+    .clock{display:none}
+    .search-wrap{padding:24px 14px 14px}
+    .grid-wrap{padding:14px 14px 32px}
+    .categories{padding:4px 14px 6px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
   }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">🦊 Fox<span>Home</span></div>
   <div class="header-right">
     <div class="clock" id="clock">--:--:--</div>
-    <button class="btn-admin" id="btnToggleAdmin" onclick="toggleAdminMode()">
-      ⚙️ Modifica
-    </button>
-    <button class="btn-admin" onclick="openPanel()">
-      ＋ Aggiungi
-    </button>
+    <button class="btn" id="btnToggleAdmin" onclick="toggleAdminMode()">⚙️ Modifica</button>
+    <button class="btn" onclick="openPanel()">＋ Aggiungi</button>
   </div>
 </header>
 
-<!-- SEARCH -->
 <div class="search-wrap">
-  <div class="search-label">Cerca sul web</div>
+  <div class="search-label" id="engineLabel">Brave Search</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cerca con Perplexity o inserisci URL..."
+    <input type="text" id="searchInput" placeholder="Cerca o inserisci URL..."
       onkeydown="if(event.key==='Enter') doSearch()">
     <button onclick="doSearch()">
       <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
     </button>
   </div>
+  <div class="engine-row" id="engineRow"></div>
 </div>
 
-<!-- CATEGORIE -->
 <div class="categories" id="catBar"></div>
 
-<!-- GRIGLIA -->
 <div class="grid-wrap">
   <div class="section-title" id="sectionTitle">Link rapidi</div>
   <div class="grid" id="grid"></div>
 </div>
 
-<!-- FOOTER -->
 <footer>
-  🦊 FoxHome &nbsp;·&nbsp; Dati salvati localmente nel browser &nbsp;·&nbsp;
+  🦊 FoxHome &nbsp;·&nbsp; Dati salvati localmente &nbsp;·&nbsp;
   <a href="#" onclick="exportData()">Esporta JSON</a> &nbsp;·&nbsp;
-  <label style="cursor:pointer;color:var(--orange)">Importa JSON <input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+  <label style="cursor:pointer;color:var(--orange)">Importa JSON
+    <input type="file" accept=".json" style="display:none" onchange="importData(event)">
+  </label>
 </footer>
 
-<!-- PANNELLO ADMIN -->
 <div class="admin-overlay" id="adminOverlay">
   <div class="admin-panel">
     <h2>🦊 Aggiungi <span>Link</span></h2>
@@ -529,250 +146,183 @@
     </div>
     <div class="form-group">
       <label>Icona</label>
-      <input type="text" id="fIcon" placeholder="https://sito.com/favicon.ico oppure emoji">
-      <div class="form-hint">💡 Lascia vuoto = favicon automatico · oppure scrivi un'emoji (es. 🎬)</div>
+      <input type="text" id="fIcon" placeholder="emoji (es. 🎬) oppure URL favicon">
+      <div class="form-hint">💡 Lascia vuoto = favicon automatico</div>
     </div>
     <div class="form-group">
       <label>Categoria</label>
-      <input type="text" id="fCat" placeholder="Es. Social, Lavoro, News...">
+      <input type="text" id="fCat" placeholder="Es. Social, Lavoro, A.I. ...">
       <div class="form-hint">💡 Lascia vuoto = nessuna categoria</div>
     </div>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closePanel()">Annulla</button>
-      <button class="btn-save" onclick="saveLink()">Salva link</button>
+      <button class="btn-save" onclick="saveLink()">Salva</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DATI ──────────────────────────────────────────────
-const STORAGE_KEY = 'foxhome_links_v2';
+const ENGINES=[
+  {id:'brave',     name:'Brave',       url:'https://search.brave.com/search?q='},
+  {id:'google',    name:'Google',      url:'https://www.google.com/search?q='},
+  {id:'ddg',       name:'DuckDuckGo',  url:'https://duckduckgo.com/?q='},
+  {id:'bing',      name:'Bing',        url:'https://www.bing.com/search?q='},
+  {id:'perplexity',name:'Perplexity',  url:'https://www.perplexity.ai/search?q='},
+  {id:'you',       name:'You.com',     url:'https://you.com/search?q='},
+];
+const ENGINE_KEY='foxhome_engine';
+let currentEngine=localStorage.getItem(ENGINE_KEY)||'brave';
 
-const DEFAULT_LINKS = [
-  { id: 1, name: 'Google',   url: 'https://google.com',   icon: '', cat: 'Ricerca' },
-  { id: 2, name: 'YouTube',  url: 'https://youtube.com',  icon: '🎬', cat: 'Media' },
-  { id: 3, name: 'Reddit',   url: 'https://reddit.com',   icon: '', cat: 'Social' },
-  { id: 4, name: 'GitHub',   url: 'https://github.com',   icon: '', cat: 'Dev' },
-  { id: 5, name: 'Wikipedia',url: 'https://wikipedia.org',icon: '', cat: 'Ricerca' },
-  { id: 6, name: 'Gmail',    url: 'https://mail.google.com', icon: '', cat: 'Lavoro' },
+function renderEngines(){
+  document.getElementById('engineRow').innerHTML=ENGINES.map(e=>`
+    <button class="engine-btn ${e.id===currentEngine?'active':''}"
+      onclick="setEngine('${e.id}')">${e.name}</button>`).join('');
+  const eng=ENGINES.find(e=>e.id===currentEngine);
+  document.getElementById('engineLabel').textContent=(eng?eng.name:'Brave')+' Search';
+}
+function setEngine(id){
+  currentEngine=id;localStorage.setItem(ENGINE_KEY,id);renderEngines();
+  toast('🔍 '+ENGINES.find(e=>e.id===id)?.name);
+}
+
+const STORAGE_KEY='foxhome_links_v3';
+const DEFAULT_LINKS=[
+  {id:1, name:'Claude',     url:'https://claude.ai',          icon:'🤖',cat:'A.I.'},
+  {id:2, name:'ChatGPT',    url:'https://chatgpt.com',        icon:'🧠',cat:'A.I.'},
+  {id:3, name:'Gemini',     url:'https://gemini.google.com',  icon:'✨',cat:'A.I.'},
+  {id:4, name:'Perplexity', url:'https://perplexity.ai',      icon:'🔍',cat:'A.I.'},
+  {id:5, name:'DeepSeek',   url:'https://chat.deepseek.com',  icon:'🐋',cat:'A.I.'},
+  {id:6, name:'GitHub',     url:'https://github.com',         icon:'',  cat:'Dev'},
 ];
 
-let links = [];
-let currentCat = 'Tutti';
-let adminMode = false;
+let links=[];
+let currentCat='Tutti';
+let adminMode=false;
 
-function loadLinks() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    links = raw ? JSON.parse(raw) : DEFAULT_LINKS;
-  } catch { links = DEFAULT_LINKS; }
+function loadLinks(){
+  try{const r=localStorage.getItem(STORAGE_KEY);links=r?JSON.parse(r):DEFAULT_LINKS;}
+  catch{links=DEFAULT_LINKS;}
+}
+function saveLinks(){localStorage.setItem(STORAGE_KEY,JSON.stringify(links));}
+
+function getCategories(){return['Tutti',...new Set(links.map(l=>l.cat).filter(Boolean))];}
+
+function renderCats(){
+  document.getElementById('catBar').innerHTML=getCategories().map(c=>`
+    <button class="cat-btn ${c===currentCat?'active':''}"
+      onclick="selectCat('${c}')">${c}</button>`).join('');
+}
+function selectCat(cat){
+  currentCat=cat;
+  document.getElementById('sectionTitle').textContent=cat==='Tutti'?'Link rapidi':cat;
+  renderCats();renderGrid();
 }
 
-function saveLinks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
-}
-
-// ── RENDER ────────────────────────────────────────────
-function getCategories() {
-  const cats = ['Tutti', ...new Set(links.map(l => l.cat).filter(Boolean))];
-  return cats;
-}
-
-function renderCats() {
-  const bar = document.getElementById('catBar');
-  bar.innerHTML = getCategories().map(c => `
-    <button class="cat-btn ${c === currentCat ? 'active' : ''}"
-      onclick="selectCat('${c}')">${c}</button>
-  `).join('');
-}
-
-function selectCat(cat) {
-  currentCat = cat;
-  document.getElementById('sectionTitle').textContent =
-    cat === 'Tutti' ? 'Link rapidi' : cat;
-  renderCats();
-  renderGrid();
-}
-
-function getFavicon(url, icon) {
-  if (!icon) {
-    try {
-      const domain = new URL(url).hostname;
-      return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-    } catch { return ''; }
-  }
-  // emoji o URL
+function getFavicon(url,icon){
+  if(!icon){try{const d=new URL(url).hostname;return`https://www.google.com/s2/favicons?domain=${d}&sz=64`;}catch{return'';}}
   return icon;
 }
+function isEmoji(s){return s&&/\p{Emoji}/u.test(s)&&s.length<=4;}
 
-function isEmoji(str) {
-  return /\p{Emoji}/u.test(str) && str.length <= 4;
-}
-
-function renderGrid() {
-  const grid = document.getElementById('grid');
-  const filtered = currentCat === 'Tutti'
-    ? links
-    : links.filter(l => l.cat === currentCat);
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty">Nessun link in questa categoria.<br>Premi <strong>+ Aggiungi</strong> per iniziare.</div>`;
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  const filtered=currentCat==='Tutti'?links:links.filter(l=>l.cat===currentCat);
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty">Nessun link.<br>Premi <strong>+ Aggiungi</strong> per iniziare.</div>`;
     return;
   }
-
-  grid.innerHTML = filtered.map((l, i) => {
-    const iconSrc = getFavicon(l.url, l.icon);
-    const iconHtml = isEmoji(l.icon)
-      ? `<div class="link-icon">${l.icon}</div>`
-      : `<div class="link-icon"><img src="${iconSrc}" onerror="this.parentNode.innerHTML='🔗'" alt=""></div>`;
-
-    return `
-      <a class="link-card" href="${l.url}" target="_blank"
-         style="animation-delay:${i * 0.04}s">
-        ${iconHtml}
-        <span class="link-name">${l.name}</span>
-        <button class="del-btn" onclick="deleteLink(event, ${l.id})" title="Elimina">✕</button>
-      </a>
-    `;
+  grid.innerHTML=filtered.map((l,i)=>{
+    const src=getFavicon(l.url,l.icon);
+    const ico=isEmoji(l.icon)
+      ?`<div class="link-icon">${l.icon}</div>`
+      :`<div class="link-icon"><img src="${src}" onerror="this.parentNode.innerHTML='🔗'" alt=""></div>`;
+    return`<a class="link-card" href="${l.url}" target="_blank" style="animation-delay:${i*.04}s">
+      ${ico}<span class="link-name">${l.name}</span>
+      <button class="del-btn" onclick="deleteLink(event,${l.id})" title="Elimina">✕</button>
+    </a>`;
   }).join('');
 }
+function render(){renderCats();renderGrid();}
 
-function render() {
-  renderCats();
-  renderGrid();
+function toggleAdminMode(){
+  adminMode=!adminMode;
+  document.body.classList.toggle('admin-mode',adminMode);
+  document.getElementById('btnToggleAdmin').textContent=adminMode?'✅ Fine':'⚙️ Modifica';
 }
-
-// ── ADMIN ─────────────────────────────────────────────
-function toggleAdminMode() {
-  adminMode = !adminMode;
-  document.body.classList.toggle('admin-mode', adminMode);
-  document.getElementById('btnToggleAdmin').textContent =
-    adminMode ? '✅ Fine modifica' : '⚙️ Modifica';
+function deleteLink(e,id){
+  e.preventDefault();e.stopPropagation();
+  links=links.filter(l=>l.id!==id);saveLinks();render();toast('Link eliminato');
 }
-
-function deleteLink(e, id) {
-  e.preventDefault();
-  e.stopPropagation();
-  links = links.filter(l => l.id !== id);
-  saveLinks();
-  render();
-  toast('Link eliminato');
-}
-
-// ── PANNELLO AGGIUNGI ──────────────────────────────────
-function openPanel() {
+function openPanel(){
   document.getElementById('adminOverlay').classList.add('open');
   document.getElementById('fName').focus();
 }
-
-function closePanel() {
+function closePanel(){
   document.getElementById('adminOverlay').classList.remove('open');
-  ['fName','fUrl','fIcon','fCat'].forEach(id =>
-    document.getElementById(id).value = '');
+  ['fName','fUrl','fIcon','fCat'].forEach(id=>document.getElementById(id).value='');
 }
-
-function saveLink() {
-  const name = document.getElementById('fName').value.trim();
-  const url  = document.getElementById('fUrl').value.trim();
-  const icon = document.getElementById('fIcon').value.trim();
-  const cat  = document.getElementById('fCat').value.trim();
-
-  if (!name) { document.getElementById('fName').focus(); return; }
-  if (!url)  { document.getElementById('fUrl').focus();  return; }
-
-  const normalized = url.startsWith('http') ? url : 'https://' + url;
-
-  links.push({
-    id: Date.now(),
-    name,
-    url: normalized,
-    icon,
-    cat: cat || ''
-  });
-
-  saveLinks();
-  closePanel();
-  render();
+function saveLink(){
+  const name=document.getElementById('fName').value.trim();
+  const url=document.getElementById('fUrl').value.trim();
+  const icon=document.getElementById('fIcon').value.trim();
+  const cat=document.getElementById('fCat').value.trim();
+  if(!name){document.getElementById('fName').focus();return;}
+  if(!url){document.getElementById('fUrl').focus();return;}
+  const norm=url.startsWith('http')?url:'https://'+url;
+  links.push({id:Date.now(),name,url:norm,icon,cat:cat||''});
+  saveLinks();closePanel();render();
   toast(`✅ "${name}" aggiunto!`);
 }
 
-// ── SEARCH ────────────────────────────────────────────
-function doSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  if (!q) return;
-  const url = q.startsWith('http') || q.includes('.')
-    ? (q.startsWith('http') ? q : 'https://' + q)
-    : `https://www.perplexity.ai/search?q=${encodeURIComponent(q)}`;
-  window.open(url, '_blank');
-}
-
-// ── EXPORT / IMPORT ───────────────────────────────────
-function exportData() {
-  const blob = new Blob([JSON.stringify(links, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'foxhome-links.json';
-  a.click();
-  toast('📦 Esportato!');
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const imported = JSON.parse(ev.target.result);
-      if (Array.isArray(imported)) {
-        links = imported;
-        saveLinks();
-        render();
-        toast(`✅ Importati ${imported.length} link!`);
-      }
-    } catch { toast('❌ File non valido'); }
-  };
-  reader.readAsText(file);
-}
-
-// ── CLOCK ─────────────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// ── TOAST ─────────────────────────────────────────────
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-// ── CHIUDI OVERLAY CLICCANDO FUORI ────────────────────
-document.getElementById('adminOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closePanel();
-});
-
-// ── SHORTCUT TASTIERA ─────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePanel();
-  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-    e.preventDefault();
-    document.getElementById('searchInput').focus();
+function doSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(!q)return;
+  let url;
+  if(q.startsWith('http')||(q.includes('.')&&!q.includes(' '))){
+    url=q.startsWith('http')?q:'https://'+q;
+  } else {
+    const eng=ENGINES.find(e=>e.id===currentEngine)||ENGINES[0];
+    url=eng.url+encodeURIComponent(q);
   }
+  window.open(url,'_blank');
+}
+
+function exportData(){
+  const b=new Blob([JSON.stringify(links,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='foxhome-links.json';a.click();toast('📦 Esportato!');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{const i=JSON.parse(ev.target.result);
+      if(Array.isArray(i)){links=i;saveLinks();render();toast(`✅ Importati ${i.length} link!`);}
+    }catch{toast('❌ File non valido');}
+  };r.readAsText(f);
+}
+
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}
+setInterval(updateClock,1000);updateClock();
+
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closePanel();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closePanel();
+  if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('searchInput').focus();}
 });
 
-// ── INIT ──────────────────────────────────────────────
-loadLinks();
-render();
+loadLinks();render();renderEngines();
 </script>
 </body>
 </html>
