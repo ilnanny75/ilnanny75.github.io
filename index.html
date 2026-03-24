@@ -1,328 +1,241 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🦊 FoxHome</title>
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="FoxHome">
-<meta name="theme-color" content="#1a1a1a">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:#0f0f0f; --surface:#1a1a1a; --surface2:#242424;
-    --border:#2e2e2e; --orange:#ff6611; --orange2:#ff8844;
-    --text:#f0f0f0; --text2:#888; --text3:#555; --radius:14px;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(255,102,17,.06) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(255,102,17,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxHome 75 - Ultimate Edition</title>
+    <style>
+        :root {
+            --bg: #11111b; --card: #1e1e2e; --text: #cdd6f4;
+            --accent: #fab387; --subtext: #a6adc8; --danger: #f38ba8;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
+            color: var(--text); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        h1 { color: var(--accent); margin-bottom: 20px; }
 
-  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(26,26,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-  .logo{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
-  .logo span{color:var(--orange)}
-  .header-right{display:flex;align-items:center;gap:10px}
-  .clock{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text2);letter-spacing:.05em}
-  .btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;transition:all .2s;white-space:nowrap}
-  .btn:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.08)}
+        .search-area {
+            display: flex; background: var(--card); padding: 12px 25px;
+            border-radius: 50px; border: 1px solid #313244;
+            margin-bottom: 40px; width: 100%; max-width: 650px; gap: 15px;
+        }
+        .search-area select, .search-area input {
+            background: none; color: white; border: none; outline: none; font-size: 1.1rem;
+        }
+        .search-area select { color: var(--accent); font-weight: bold; cursor: pointer; }
 
-  .search-wrap{position:relative;z-index:1;padding:36px 24px 16px;display:flex;flex-direction:column;align-items:center;gap:12px}
-  .search-label{font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text3)}
-  .search-box{width:100%;max-width:620px;position:relative}
-  .search-box input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 50px 13px 18px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s}
-  .search-box input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,102,17,.12)}
-  .search-box input::placeholder{color:var(--text3)}
-  .search-box button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--orange);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
-  .search-box button:hover{background:var(--orange2)}
-  .search-box button svg{width:16px;height:16px;fill:white}
+        .dashboard {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; width: 100%; max-width: 1200px;
+        }
+        .section {
+            background: var(--card); padding: 20px; border-radius: 20px;
+            border: 1px solid #313244; position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .section h2 {
+            margin: 0 0 15px 0; font-size: 1rem; color: var(--accent);
+            border-bottom: 1px solid #313244; padding-bottom: 10px; text-transform: uppercase;
+        }
+        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
 
-  .engine-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:620px;width:100%}
-  .engine-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:5px 12px;border-radius:20px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.74rem;font-weight:600;transition:all .2s}
-  .engine-btn:hover,.engine-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.1)}
+        .link-item {
+            display: flex; flex-direction: column; align-items: center;
+            text-decoration: none; color: var(--text); font-size: 0.75rem;
+            position: relative; transition: transform 0.2s; text-align: center;
+        }
+        .link-item:hover { transform: translateY(-3px); color: var(--accent); }
+        .link-item img {
+            width: 45px; height: 45px; border-radius: 12px;
+            background: #fff; padding: 5px; margin-bottom: 6px;
+        }
 
-  .categories{position:relative;z-index:1;padding:4px 24px 8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .cat-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s}
-  .cat-btn:hover,.cat-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,102,17,.08)}
+        .del-btn {
+            position: absolute; top: -5px; right: 5px; background: var(--danger);
+            color: white; border-radius: 50%; width: 18px; height: 18px;
+            font-size: 12px; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 10;
+        }
+        .add-btn-small {
+            grid-column: span 4; text-align: center; padding: 10px;
+            border: 1px dashed var(--subtext); border-radius: 10px;
+            cursor: pointer; font-size: 0.8rem; display: none; margin-top: 10px; color: var(--accent);
+        }
 
-  .grid-wrap{position:relative;z-index:1;padding:18px 24px 48px}
-  .section-title{font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
+        .footer-tools {
+            margin-top: 50px; padding: 20px; display: flex; flex-wrap: wrap;
+            gap: 20px; justify-content: center; opacity: 0.7;
+        }
+        .tool-link { color: var(--subtext); cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .tool-link:hover { color: var(--accent); }
 
-  .link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;text-decoration:none;color:var(--text);transition:all .2s;position:relative;animation:fadeIn .3s ease both}
-  .link-card:hover{border-color:var(--orange);background:var(--surface2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .link-icon{width:38px;height:38px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px}
-  .link-icon img{width:26px;height:26px;object-fit:contain}
-  .link-name{font-size:.72rem;font-weight:600;text-align:center;color:var(--text2);line-height:1.2;word-break:break-word}
-  .link-card .del-btn{display:none;position:absolute;top:4px;right:4px;background:rgba(255,50,50,.85);border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;color:white;align-items:center;justify-content:center}
-  body.admin-mode .link-card .del-btn{display:flex}
-  body.admin-mode .link-card{border-style:dashed}
-  .empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);font-size:.9rem}
-
-  .admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
-  .admin-overlay.open{display:flex}
-  .admin-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:420px;animation:panelIn .25s ease}
-  @keyframes panelIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  .admin-panel h2{font-size:1.1rem;font-weight:800;margin-bottom:20px}
-  .admin-panel h2 span{color:var(--orange)}
-  .form-group{margin-bottom:14px}
-  .form-group label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
-  .form-group input,.form-group select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.85rem;outline:none;transition:border-color .2s}
-  .form-group input:focus{border-color:var(--orange)}
-  .form-group input::placeholder{color:var(--text3)}
-  .form-hint{font-size:.7rem;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace}
-  .btn-row{display:flex;gap:10px;margin-top:20px}
-  .btn-save{flex:1;background:var(--orange);border:none;border-radius:8px;padding:12px;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:background .2s}
-  .btn-save:hover{background:var(--orange2)}
-  .btn-cancel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 18px;color:var(--text2);font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s}
-  .btn-cancel:hover{border-color:var(--text2);color:var(--text)}
-
-  footer{position:relative;z-index:1;text-align:center;padding:14px;border-top:1px solid var(--border);font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
-  footer a{color:var(--orange);text-decoration:none}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface2);border:1px solid var(--orange);border-radius:10px;padding:10px 20px;font-size:.85rem;color:var(--text);z-index:999;transition:transform .3s ease;pointer-events:none}
-  .toast.show{transform:translateX(-50%) translateY(0)}
-
-  @media(max-width:600px){
-    header{padding:12px 14px}
-    .clock{display:none}
-    .search-wrap{padding:24px 14px 14px}
-    .grid-wrap{padding:14px 14px 32px}
-    .categories{padding:4px 14px 6px}
-    .grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-  }
-</style>
+        #admin-box {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--card); padding: 25px; border-radius: 20px;
+            border: 2px solid var(--accent); z-index: 100; width: 320px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+        #admin-box input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #45475a; background: #11111b; color: white; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--accent); color: var(--bg); margin-top: 10px; }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">🦊 Fox<span>Home</span></div>
-  <div class="header-right">
-    <div class="clock" id="clock">--:--:--</div>
-    <button class="btn" id="btnToggleAdmin" onclick="toggleAdminMode()">⚙️ Modifica</button>
-    <button class="btn" onclick="openPanel()">＋ Aggiungi</button>
-  </div>
-</header>
+    <h1>FoxHome 75</h1>
 
-<div class="search-wrap">
-  <div class="search-label" id="engineLabel">Brave Search</div>
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cerca o inserisci URL..."
-      onkeydown="if(event.key==='Enter') doSearch()">
-    <button onclick="doSearch()">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-    </button>
-  </div>
-  <div class="engine-row" id="engineRow"></div>
-</div>
-
-<div class="categories" id="catBar"></div>
-
-<div class="grid-wrap">
-  <div class="section-title" id="sectionTitle">Link rapidi</div>
-  <div class="grid" id="grid"></div>
-</div>
-
-<footer>
-  🦊 FoxHome &nbsp;·&nbsp; Dati salvati localmente &nbsp;·&nbsp;
-  <a href="#" onclick="exportData()">Esporta JSON</a> &nbsp;·&nbsp;
-  <label style="cursor:pointer;color:var(--orange)">Importa JSON
-    <input type="file" accept=".json" style="display:none" onchange="importData(event)">
-  </label>
-</footer>
-
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-panel">
-    <h2>🦊 Aggiungi <span>Link</span></h2>
-    <div class="form-group">
-      <label>Nome</label>
-      <input type="text" id="fName" placeholder="Es. YouTube">
+    <div class="search-area">
+        <select id="engine">
+            <option value="https://www.google.com/search?q=">Google</option>
+            <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+            <option value="https://it.wikipedia.org/wiki/Speciale:Ricerca?search=">Wikipedia</option>
+            <option value="https://www.youtube.com/results?search_query=">YouTube</option>
+        </select>
+        <input type="text" id="search-q" placeholder="Cerca..." onkeydown="if(event.key==='Enter') doSearch()">
+        <span onclick="doSearch()" style="cursor:pointer">🔍</span>
     </div>
-    <div class="form-group">
-      <label>URL</label>
-      <input type="text" id="fUrl" placeholder="https://...">
+
+    <div class="dashboard" id="board"></div>
+
+    <div class="footer-tools">
+        <span class="tool-link" onclick="toggleEditMode()">✏️ Modifica</span>
+        <span class="tool-link" onclick="openNewCatModal()">📂 Nuova Sezione</span>
+        <span class="tool-link" onclick="exportJSON()">💾 Salva JSON</span>
+        <span class="tool-link" onclick="document.getElementById('file-in').click()">📂 Carica JSON</span>
+        <span class="tool-link" onclick="document.getElementById('fav-in').click()">⭐ Importa Browser</span>
+        <span class="tool-link" style="color:var(--danger)" onclick="resetAll()">🗑️ Reset</span>
+
+        <input type="file" id="file-in" style="display:none" accept=".json" onchange="importJSON(event)">
+        <input type="file" id="fav-in" style="display:none" accept=".html" onchange="importBrowserBookmarks(event)">
     </div>
-    <div class="form-group">
-      <label>Icona</label>
-      <input type="text" id="fIcon" placeholder="emoji (es. 🎬) oppure URL favicon">
-      <div class="form-hint">💡 Lascia vuoto = favicon automatico</div>
+
+    <div id="admin-box">
+        <h3 id="modal-title" style="margin:0; color:var(--accent)">Aggiungi</h3>
+        <div id="site-fields">
+            <input type="text" id="new-name" placeholder="Nome Sito">
+            <input type="text" id="new-url" placeholder="URL (es: google.it)">
+        </div>
+        <div id="cat-fields" style="display:none">
+            <input type="text" id="new-cat-name" placeholder="Nome nuova sezione">
+        </div>
+        <input type="hidden" id="target-cat">
+        <button class="btn-main" onclick="saveData()">Salva</button>
+        <button class="btn-main" style="background:#45475a; color:white" onclick="closeModal()">Annulla</button>
     </div>
-    <div class="form-group">
-      <label>Categoria</label>
-      <input type="text" id="fCat" placeholder="Es. Social, Lavoro, A.I. ...">
-      <div class="form-hint">💡 Lascia vuoto = nessuna categoria</div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-cancel" onclick="closePanel()">Annulla</button>
-      <button class="btn-save" onclick="saveLink()">Salva</button>
-    </div>
-  </div>
-</div>
 
-<div class="toast" id="toast"></div>
+    <script>
+        const defaultData = {
+            "Preferiti": [{name:"Wikipedia", url:"https://wikipedia.org"}],
+            "Dev": [{name:"GitHub", url:"https://github.com"}, {name:"Gnome Look", url:"https://www.gnome-look.org"}],
+            "Social": [{name:"YouTube", url:"https://youtube.com"}, {name:"Reddit", url:"https://reddit.com"}],
+            "Email": [{name:"Gmail", url:"https://gmail.com"}, {name:"Tuta", url:"https://tuta.com"}],
+            "A.I.": [{name:"Gemini", url:"https://gemini.google.com"}, {name:"ChatGPT", url:"https://chatgpt.com"}],
+            "Ricerca": [{name:"Google", url:"https://google.com"}, {name:"DuckDuckGo", url:"https://duckduckgo.com"}]
+        };
 
-<script>
-const ENGINES=[
-  {id:'brave',     name:'Brave',       url:'https://search.brave.com/search?q='},
-  {id:'google',    name:'Google',      url:'https://www.google.com/search?q='},
-  {id:'ddg',       name:'DuckDuckGo',  url:'https://duckduckgo.com/?q='},
-  {id:'bing',      name:'Bing',        url:'https://www.bing.com/search?q='},
-  {id:'perplexity',name:'Perplexity',  url:'https://www.perplexity.ai/search?q='},
-  {id:'you',       name:'You.com',     url:'https://you.com/search?q='},
-];
-const ENGINE_KEY='foxhome_engine';
-let currentEngine=localStorage.getItem(ENGINE_KEY)||'brave';
+        let myData = JSON.parse(localStorage.getItem('foxhome_final_v10')) || defaultData;
+        let isEditMode = false;
 
-function renderEngines(){
-  document.getElementById('engineRow').innerHTML=ENGINES.map(e=>`
-    <button class="engine-btn ${e.id===currentEngine?'active':''}"
-      onclick="setEngine('${e.id}')">${e.name}</button>`).join('');
-  const eng=ENGINES.find(e=>e.id===currentEngine);
-  document.getElementById('engineLabel').textContent=(eng?eng.name:'Brave')+' Search';
-}
-function setEngine(id){
-  currentEngine=id;localStorage.setItem(ENGINE_KEY,id);renderEngines();
-  toast('🔍 '+ENGINES.find(e=>e.id===id)?.name);
-}
+        function render() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            for (const [cat, links] of Object.entries(myData)) {
+                const section = document.createElement('div');
+                section.className = 'section';
+                section.innerHTML = `<h2>${cat}</h2><div class="links-grid"></div>`;
+                const grid = section.querySelector('.links-grid');
+                links.forEach((link, idx) => {
+                    const domain = new URL(link.url).hostname;
+                    grid.innerHTML += `
+                        <div class="link-item">
+                            <div class="del-btn" style="display:${isEditMode?'flex':'none'}" onclick="deleteLink('${cat}', ${idx})">✕</div>
+                            <a href="${link.url}" target="_blank" class="link-item">
+                                <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" onerror="this.src='https://cdn-icons-png.flaticon.com/128/1006/1006771.png'">
+                                <span>${link.name}</span>
+                            </a>
+                        </div>`;
+                });
+                grid.innerHTML += `<div class="add-btn-small" style="display:${isEditMode?'block':'none'}" onclick="openAddModal('${cat}')">+ Aggiungi a ${cat}</div>`;
+                board.appendChild(section);
+            }
+            localStorage.setItem('foxhome_final_v10', JSON.stringify(myData));
+        }
 
-const STORAGE_KEY='foxhome_links_v3';
-const DEFAULT_LINKS=[
-  {id:1, name:'Claude',     url:'https://claude.ai',          icon:'🤖',cat:'A.I.'},
-  {id:2, name:'ChatGPT',    url:'https://chatgpt.com',        icon:'🧠',cat:'A.I.'},
-  {id:3, name:'Gemini',     url:'https://gemini.google.com',  icon:'✨',cat:'A.I.'},
-  {id:4, name:'Perplexity', url:'https://perplexity.ai',      icon:'🔍',cat:'A.I.'},
-  {id:5, name:'DeepSeek',   url:'https://chat.deepseek.com',  icon:'🐋',cat:'A.I.'},
-  {id:6, name:'GitHub',     url:'https://github.com',         icon:'',  cat:'Dev'},
-];
+        function doSearch() {
+            const engine = document.getElementById('engine').value;
+            const q = document.getElementById('search-q').value;
+            if(q) window.open(engine + encodeURIComponent(q), '_blank');
+        }
 
-let links=[];
-let currentCat='Tutti';
-let adminMode=false;
+        function toggleEditMode() { isEditMode = !isEditMode; render(); }
+        function openAddModal(cat) {
+            document.getElementById('modal-title').innerText = "Aggiungi a " + cat;
+            document.getElementById('site-fields').style.display = 'block';
+            document.getElementById('cat-fields').style.display = 'none';
+            document.getElementById('target-cat').value = cat;
+            document.getElementById('admin-box').style.display = 'block';
+        }
+        function openNewCatModal() {
+            document.getElementById('modal-title').innerText = "Crea Nuova Sezione";
+            document.getElementById('site-fields').style.display = 'none';
+            document.getElementById('cat-fields').style.display = 'block';
+            document.getElementById('target-cat').value = "NEW";
+            document.getElementById('admin-box').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('admin-box').style.display = 'none'; }
 
-function loadLinks(){
-  try{const r=localStorage.getItem(STORAGE_KEY);links=r?JSON.parse(r):DEFAULT_LINKS;}
-  catch{links=DEFAULT_LINKS;}
-}
-function saveLinks(){localStorage.setItem(STORAGE_KEY,JSON.stringify(links));}
+        function saveData() {
+            const target = document.getElementById('target-cat').value;
+            if(target === "NEW") {
+                const name = document.getElementById('new-cat-name').value;
+                if(name) myData[name] = [];
+            } else {
+                const name = document.getElementById('new-name').value;
+                let url = document.getElementById('new-url').value;
+                if(name && url) {
+                    if(!url.startsWith('http')) url = 'https://' + url;
+                    myData[target].push({name, url});
+                }
+            }
+            render(); closeModal();
+        }
 
-function getCategories(){return['Tutti',...new Set(links.map(l=>l.cat).filter(Boolean))];}
+        function deleteLink(cat, idx) {
+            myData[cat].splice(idx, 1);
+            if(myData[cat].length === 0) delete myData[cat];
+            render();
+        }
 
-function renderCats(){
-  document.getElementById('catBar').innerHTML=getCategories().map(c=>`
-    <button class="cat-btn ${c===currentCat?'active':''}"
-      onclick="selectCat('${c}')">${c}</button>`).join('');
-}
-function selectCat(cat){
-  currentCat=cat;
-  document.getElementById('sectionTitle').textContent=cat==='Tutti'?'Link rapidi':cat;
-  renderCats();renderGrid();
-}
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(myData, null, 2));
+            const a = document.createElement('a'); a.href = dataStr; a.download = "foxhome_backup.json"; a.click();
+        }
 
-function getFavicon(url,icon){
-  if(!icon){try{const d=new URL(url).hostname;return`https://www.google.com/s2/favicons?domain=${d}&sz=64`;}catch{return'';}}
-  return icon;
-}
-function isEmoji(s){return s&&/\p{Emoji}/u.test(s)&&s.length<=4;}
+        function importJSON(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { myData = JSON.parse(ev.target.result); render(); };
+            reader.readAsText(e.target.files[0]);
+        }
 
-function renderGrid(){
-  const grid=document.getElementById('grid');
-  const filtered=currentCat==='Tutti'?links:links.filter(l=>l.cat===currentCat);
-  if(!filtered.length){
-    grid.innerHTML=`<div class="empty">Nessun link.<br>Premi <strong>+ Aggiungi</strong> per iniziare.</div>`;
-    return;
-  }
-  grid.innerHTML=filtered.map((l,i)=>{
-    const src=getFavicon(l.url,l.icon);
-    const ico=isEmoji(l.icon)
-      ?`<div class="link-icon">${l.icon}</div>`
-      :`<div class="link-icon"><img src="${src}" onerror="this.parentNode.innerHTML='🔗'" alt=""></div>`;
-    return`<a class="link-card" href="${l.url}" target="_blank" style="animation-delay:${i*.04}s">
-      ${ico}<span class="link-name">${l.name}</span>
-      <button class="del-btn" onclick="deleteLink(event,${l.id})" title="Elimina">✕</button>
-    </a>`;
-  }).join('');
-}
-function render(){renderCats();renderGrid();}
+        function importBrowserBookmarks(e) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const doc = new DOMParser().parseFromString(event.target.result, 'text/html');
+                doc.querySelectorAll('dt h3').forEach(h3 => {
+                    const cat = h3.innerText;
+                    const links = h3.parentElement.querySelectorAll('dd a');
+                    if(links.length > 0) {
+                        if(!myData[cat]) myData[cat] = [];
+                        links.forEach(l => myData[cat].push({ name: l.innerText, url: l.href }));
+                    }
+                });
+                render();
+            };
+            reader.readAsText(e.target.files[0]);
+        }
 
-function toggleAdminMode(){
-  adminMode=!adminMode;
-  document.body.classList.toggle('admin-mode',adminMode);
-  document.getElementById('btnToggleAdmin').textContent=adminMode?'✅ Fine':'⚙️ Modifica';
-}
-function deleteLink(e,id){
-  e.preventDefault();e.stopPropagation();
-  links=links.filter(l=>l.id!==id);saveLinks();render();toast('Link eliminato');
-}
-function openPanel(){
-  document.getElementById('adminOverlay').classList.add('open');
-  document.getElementById('fName').focus();
-}
-function closePanel(){
-  document.getElementById('adminOverlay').classList.remove('open');
-  ['fName','fUrl','fIcon','fCat'].forEach(id=>document.getElementById(id).value='');
-}
-function saveLink(){
-  const name=document.getElementById('fName').value.trim();
-  const url=document.getElementById('fUrl').value.trim();
-  const icon=document.getElementById('fIcon').value.trim();
-  const cat=document.getElementById('fCat').value.trim();
-  if(!name){document.getElementById('fName').focus();return;}
-  if(!url){document.getElementById('fUrl').focus();return;}
-  const norm=url.startsWith('http')?url:'https://'+url;
-  links.push({id:Date.now(),name,url:norm,icon,cat:cat||''});
-  saveLinks();closePanel();render();
-  toast(`✅ "${name}" aggiunto!`);
-}
+        function resetAll() { if(confirm("Ripristinare i siti originali?")) { myData = defaultData; render(); } }
 
-function doSearch(){
-  const q=document.getElementById('searchInput').value.trim();
-  if(!q)return;
-  let url;
-  if(q.startsWith('http')||(q.includes('.')&&!q.includes(' '))){
-    url=q.startsWith('http')?q:'https://'+q;
-  } else {
-    const eng=ENGINES.find(e=>e.id===currentEngine)||ENGINES[0];
-    url=eng.url+encodeURIComponent(q);
-  }
-  window.open(url,'_blank');
-}
-
-function exportData(){
-  const b=new Blob([JSON.stringify(links,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download='foxhome-links.json';a.click();toast('📦 Esportato!');
-}
-function importData(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try{const i=JSON.parse(ev.target.result);
-      if(Array.isArray(i)){links=i;saveLinks();render();toast(`✅ Importati ${i.length} link!`);}
-    }catch{toast('❌ File non valido');}
-  };r.readAsText(f);
-}
-
-function updateClock(){
-  const n=new Date();
-  document.getElementById('clock').textContent=
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-}
-setInterval(updateClock,1000);updateClock();
-
-function toast(msg){
-  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
-}
-
-document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closePanel();});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')closePanel();
-  if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('searchInput').focus();}
-});
-
-loadLinks();render();renderEngines();
-</script>
+        render();
+    </script>
 </body>
 </html>
