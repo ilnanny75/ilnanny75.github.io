@@ -2,240 +2,789 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoxHome 75 - Ultimate Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Startpage</title>
+
+    <!-- PWA / App icon meta tags -->
+    <meta name="application-name" content="Startpage">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Startpage">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#11111b">
+
+    <!-- PWA Manifest — punta a icon.png nella stessa cartella -->
+    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Startpage%22%2C%22short_name%22%3A%22Startpage%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2311111b%22%2C%22theme_color%22%3A%22%2311111b%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
+    <!-- Favicon e icona Apple touch -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg: #11111b; --card: #1e1e2e; --text: #cdd6f4;
-            --accent: #fab387; --subtext: #a6adc8; --danger: #f38ba8;
+            --bg:       #11111b;
+            --bg2:      #161622;
+            --card:     #1e1e2e;
+            --card2:    #252535;
+            --border:   #313244;
+            --text:     #cdd6f4;
+            --subtext:  #a6adc8;
+            --accent:   #fab387;
+            --accent2:  #cba6f7;
+            --green:    #a6e3a1;
+            --danger:   #f38ba8;
+            --blue:     #89b4fa;
+            --teal:     #94e2d5;
         }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
-            color: var(--text); margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0 16px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 { color: var(--accent); margin-bottom: 20px; }
 
-        .search-area {
-            display: flex; background: var(--card); padding: 12px 25px;
-            border-radius: 50px; border: 1px solid #313244;
-            margin-bottom: 40px; width: 100%; max-width: 650px; gap: 15px;
+        /* ── Header ── */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0 18px;
         }
-        .search-area select, .search-area input {
-            background: none; color: white; border: none; outline: none; font-size: 1.1rem;
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .search-area select { color: var(--accent); font-weight: bold; cursor: pointer; }
+        .logo span { color: var(--subtext); font-weight: 400; }
 
+        /* ── Search ── */
+        .search-wrap {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 0 36px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 16px;
+            gap: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(250,179,135,0.12);
+        }
+        .search-engine-btn {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 6px 12px;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .search-engine-btn:hover { background: var(--card2); }
+
+        /* engine dropdown */
+        .engine-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 200;
+            min-width: 160px;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .engine-dropdown.open { display: block; }
+        .engine-opt {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.12s;
+        }
+        .engine-opt:hover { background: var(--border); color: var(--accent); }
+        .engine-opt.active { color: var(--accent); font-weight: 600; }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+        }
+        .search-input::placeholder { color: var(--subtext); }
+        .search-btn {
+            background: none;
+            border: none;
+            color: var(--subtext);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            transition: color 0.15s;
+            line-height: 1;
+        }
+        .search-btn:hover { color: var(--accent); }
+
+        /* ── Dashboard grid ── */
         .dashboard {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px; width: 100%; max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
         }
+
+        /* ── Section card ── */
         .section {
-            background: var(--card); padding: 20px; border-radius: 20px;
-            border: 1px solid #313244; position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: var(--card);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            transition: border-color 0.2s;
         }
-        .section h2 {
-            margin: 0 0 15px 0; font-size: 1rem; color: var(--accent);
-            border-bottom: 1px solid #313244; padding-bottom: 10px; text-transform: uppercase;
+        .section:hover { border-color: #45475a; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
         }
-        .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .del-section-btn {
+            display: none;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── Links grid ── */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .link-wrap { position: relative; }
 
         .link-item {
-            display: flex; flex-direction: column; align-items: center;
-            text-decoration: none; color: var(--text); font-size: 0.75rem;
-            position: relative; transition: transform 0.2s; text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: var(--subtext);
+            font-size: 0.7rem;
+            padding: 8px 4px;
+            border-radius: 12px;
+            transition: background 0.15s, color 0.15s, transform 0.15s;
+            text-align: center;
+            cursor: pointer;
         }
-        .link-item:hover { transform: translateY(-3px); color: var(--accent); }
+        .link-item:hover {
+            background: var(--card2);
+            color: var(--text);
+            transform: translateY(-2px);
+        }
         .link-item img {
-            width: 45px; height: 45px; border-radius: 12px;
-            background: #fff; padding: 5px; margin-bottom: 6px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: white;
+            padding: 4px;
+            object-fit: contain;
+        }
+        .link-label { line-height: 1.2; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .del-link-btn {
+            position: absolute;
+            top: 0; right: 0;
+            display: none;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            line-height: 1;
         }
 
-        .del-btn {
-            position: absolute; top: -5px; right: 5px; background: var(--danger);
-            color: white; border-radius: 50%; width: 18px; height: 18px;
-            font-size: 12px; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 10;
+        .add-link-btn {
+            display: none;
+            grid-column: span 4;
+            padding: 9px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            background: none;
+            color: var(--accent);
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            transition: border-color 0.15s, background 0.15s;
         }
-        .add-btn-small {
-            grid-column: span 4; text-align: center; padding: 10px;
-            border: 1px dashed var(--subtext); border-radius: 10px;
-            cursor: pointer; font-size: 0.8rem; display: none; margin-top: 10px; color: var(--accent);
-        }
+        .add-link-btn:hover { border-color: var(--accent); background: rgba(250,179,135,0.06); }
 
-        .footer-tools {
-            margin-top: 50px; padding: 20px; display: flex; flex-wrap: wrap;
-            gap: 20px; justify-content: center; opacity: 0.7;
-        }
-        .tool-link { color: var(--subtext); cursor: pointer; font-size: 0.9rem; font-weight: bold; }
-        .tool-link:hover { color: var(--accent); }
+        /* ── Edit mode active ── */
+        body.edit-mode .del-link-btn { display: flex; }
+        body.edit-mode .del-section-btn { display: block; }
+        body.edit-mode .add-link-btn { display: block; }
+        body.edit-mode .section { border-color: rgba(250,179,135,0.3); }
 
-        #admin-box {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--card); padding: 25px; border-radius: 20px;
-            border: 2px solid var(--accent); z-index: 100; width: 320px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        /* ── Footer toolbar ── */
+        .footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(17,17,27,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 50;
         }
-        #admin-box input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #45475a; background: #11111b; color: white; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--accent); color: var(--bg); margin-top: 10px; }
+        .tool-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--subtext);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            padding: 6px 13px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .tool-btn:hover { color: var(--text); border-color: var(--accent); background: var(--card2); }
+        .tool-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(250,179,135,0.08); }
+        .tool-btn.danger { color: var(--danger); }
+        .tool-btn.danger:hover { border-color: var(--danger); background: rgba(243,139,168,0.08); }
+
+        /* ── Modal overlay ── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            z-index: 90;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .overlay.open { display: flex; }
+
+        .modal {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+        .modal h3 {
+            margin: 0 0 18px;
+            color: var(--accent);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .modal-input:focus { border-color: var(--accent); }
+        .modal-btn {
+            width: 100%;
+            padding: 11px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: opacity 0.15s;
+        }
+        .modal-btn:hover { opacity: 0.88; }
+        .modal-btn.primary { background: var(--accent); color: var(--bg); }
+        .modal-btn.secondary { background: var(--card2); color: var(--subtext); }
+
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--card2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+            z-index: 200;
+            white-space: nowrap;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 500px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .links-grid { grid-template-columns: repeat(4, 1fr); }
+        }
     </style>
 </head>
 <body>
 
-    <h1>FoxHome 75</h1>
+    <header>
+        <div class="logo">🦊 Startpage</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--subtext)" id="clock"></div>
+    </header>
 
-    <div class="search-area">
-        <select id="engine">
-            <option value="https://www.google.com/search?q=">Google</option>
-            <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
-            <option value="https://it.wikipedia.org/wiki/Speciale:Ricerca?search=">Wikipedia</option>
-            <option value="https://www.youtube.com/results?search_query=">YouTube</option>
-        </select>
-        <input type="text" id="search-q" placeholder="Cerca..." onkeydown="if(event.key==='Enter') doSearch()">
-        <span onclick="doSearch()" style="cursor:pointer">🔍</span>
+    <div class="search-wrap">
+        <div class="search-box">
+            <div class="search-engine-btn" id="engine-btn" onclick="toggleEngineMenu(event)">
+                <span id="engine-label">Brave</span> ▾
+                <div class="engine-dropdown" id="engine-menu">
+                    <div class="engine-opt" data-url="https://search.brave.com/search?q=" onclick="setEngine(this)">🦁 Brave</div>
+                    <div class="engine-opt" data-url="https://duckduckgo.com/?q=" onclick="setEngine(this)">🦆 DuckDuckGo</div>
+                    <div class="engine-opt" data-url="https://www.google.com/search?q=" onclick="setEngine(this)">🔵 Google</div>
+                    <div class="engine-opt" data-url="https://www.youtube.com/results?search_query=" onclick="setEngine(this)">▶️ YouTube</div>
+                    <div class="engine-opt" data-url="https://it.wikipedia.org/wiki/Speciale:Ricerca?search=" onclick="setEngine(this)">📖 Wikipedia</div>
+                    <div class="engine-opt" data-url="https://github.com/search?q=" onclick="setEngine(this)">🐙 GitHub</div>
+                </div>
+            </div>
+            <input class="search-input" id="search-q" type="text" placeholder="Cerca..." onkeydown="if(event.key==='Enter') doSearch()" autocomplete="off">
+            <button class="search-btn" onclick="doSearch()">⌕</button>
+        </div>
     </div>
 
     <div class="dashboard" id="board"></div>
 
-    <div class="footer-tools">
-        <span class="tool-link" onclick="toggleEditMode()">✏️ Modifica</span>
-        <span class="tool-link" onclick="openNewCatModal()">📂 Nuova Sezione</span>
-        <span class="tool-link" onclick="exportJSON()">💾 Salva JSON</span>
-        <span class="tool-link" onclick="document.getElementById('file-in').click()">📂 Carica JSON</span>
-        <span class="tool-link" onclick="document.getElementById('fav-in').click()">⭐ Importa Browser</span>
-        <span class="tool-link" style="color:var(--danger)" onclick="resetAll()">🗑️ Reset</span>
+    <!-- Footer toolbar -->
+    <div class="footer">
+        <button class="tool-btn" id="edit-btn" onclick="toggleEditMode()">✏️ Modifica</button>
+        <button class="tool-btn" onclick="openNewCatModal()">＋ Sezione</button>
+        <button class="tool-btn" onclick="exportJSON()">💾 Esporta JSON</button>
+        <button class="tool-btn" onclick="document.getElementById('file-in').click()">📂 Importa JSON</button>
+        <button class="tool-btn" onclick="document.getElementById('fav-in').click()">⭐ Preferiti Browser</button>
+        <button class="tool-btn danger" onclick="resetAll()">🗑️ Reset</button>
 
         <input type="file" id="file-in" style="display:none" accept=".json" onchange="importJSON(event)">
         <input type="file" id="fav-in" style="display:none" accept=".html" onchange="importBrowserBookmarks(event)">
     </div>
 
-    <div id="admin-box">
-        <h3 id="modal-title" style="margin:0; color:var(--accent)">Aggiungi</h3>
-        <div id="site-fields">
-            <input type="text" id="new-name" placeholder="Nome Sito">
-            <input type="text" id="new-url" placeholder="URL (es: google.it)">
+    <!-- Modal -->
+    <div class="overlay" id="overlay" onclick="closeModal(event)">
+        <div class="modal" id="modal">
+            <h3 id="modal-title">Aggiungi</h3>
+            <div id="site-fields">
+                <input class="modal-input" type="text" id="new-name" placeholder="Nome sito">
+                <input class="modal-input" type="url" id="new-url" placeholder="URL (es: https://example.com)">
+            </div>
+            <div id="cat-fields" style="display:none">
+                <input class="modal-input" type="text" id="new-cat-name" placeholder="Nome nuova sezione">
+            </div>
+            <input type="hidden" id="target-cat">
+            <button class="modal-btn primary" onclick="saveData()">Salva</button>
+            <button class="modal-btn secondary" onclick="closeModal()">Annulla</button>
         </div>
-        <div id="cat-fields" style="display:none">
-            <input type="text" id="new-cat-name" placeholder="Nome nuova sezione">
-        </div>
-        <input type="hidden" id="target-cat">
-        <button class="btn-main" onclick="saveData()">Salva</button>
-        <button class="btn-main" style="background:#45475a; color:white" onclick="closeModal()">Annulla</button>
     </div>
 
+    <div id="toast"></div>
+
     <script>
-        const defaultData = {
-            "Preferiti": [{name:"Wikipedia", url:"https://wikipedia.org"}],
-            "Dev": [{name:"GitHub", url:"https://github.com"}, {name:"Gnome Look", url:"https://www.gnome-look.org"}],
-            "Social": [{name:"YouTube", url:"https://youtube.com"}, {name:"Reddit", url:"https://reddit.com"}],
-            "Email": [{name:"Gmail", url:"https://gmail.com"}, {name:"Tuta", url:"https://tuta.com"}],
-            "A.I.": [{name:"Gemini", url:"https://gemini.google.com"}, {name:"ChatGPT", url:"https://chatgpt.com"}],
-            "Ricerca": [{name:"Google", url:"https://google.com"}, {name:"DuckDuckGo", url:"https://duckduckgo.com"}]
-        };
+    // ── Default data (il file su GitHub non contiene dati personali) ──
+    const DEFAULT_DATA = {
+        "Dev": [
+            {name:"GitHub", url:"https://github.com"},
+            {name:"GitLab", url:"https://gitlab.com"},
+            {name:"Gnome Look", url:"https://www.gnome-look.org"},
+            {name:"OpenClipart", url:"https://openclipart.org"},
+            {name:"DeviantArt", url:"https://www.deviantart.com"}
+        ],
+        "A.I.": [
+            {name:"Claude", url:"https://claude.ai"},
+            {name:"ChatGPT", url:"https://chatgpt.com"},
+            {name:"DeepSeek", url:"https://chat.deepseek.com"},
+            {name:"Gemini", url:"https://gemini.google.com"},
+            {name:"Perplexity", url:"https://perplexity.ai"},
+            {name:"Mistral", url:"https://chat.mistral.ai"}
+        ],
+        "Social": [
+            {name:"YouTube", url:"https://youtube.com"},
+            {name:"Reddit", url:"https://reddit.com"},
+            {name:"Instagram", url:"https://instagram.com"},
+            {name:"Facebook", url:"https://facebook.com"}
+        ],
+        "Email": [
+            {name:"Gmail", url:"https://gmail.com"},
+            {name:"Tuta", url:"https://tuta.com"}
+        ]
+    };
 
-        let myData = JSON.parse(localStorage.getItem('foxhome_final_v10')) || defaultData;
-        let isEditMode = false;
+    const STORAGE_KEY = 'foxhome_v12';
+    let myData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JSON.parse(JSON.stringify(DEFAULT_DATA));
+    let isEditMode = false;
 
-        function render() {
-            const board = document.getElementById('board');
-            board.innerHTML = '';
-            for (const [cat, links] of Object.entries(myData)) {
-                const section = document.createElement('div');
-                section.className = 'section';
-                section.innerHTML = `<h2>${cat}</h2><div class="links-grid"></div>`;
-                const grid = section.querySelector('.links-grid');
-                links.forEach((link, idx) => {
-                    const domain = new URL(link.url).hostname;
-                    grid.innerHTML += `
-                        <div class="link-item">
-                            <div class="del-btn" style="display:${isEditMode?'flex':'none'}" onclick="deleteLink('${cat}', ${idx})">✕</div>
-                            <a href="${link.url}" target="_blank" class="link-item">
-                                <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" onerror="this.src='https://cdn-icons-png.flaticon.com/128/1006/1006771.png'">
-                                <span>${link.name}</span>
-                            </a>
-                        </div>`;
-                });
-                grid.innerHTML += `<div class="add-btn-small" style="display:${isEditMode?'block':'none'}" onclick="openAddModal('${cat}')">+ Aggiungi a ${cat}</div>`;
-                board.appendChild(section);
-            }
-            localStorage.setItem('foxhome_final_v10', JSON.stringify(myData));
+    // ── Search engine state ──
+    const ENGINES = {
+        "Brave":     "https://search.brave.com/search?q=",
+        "DuckDuckGo":"https://duckduckgo.com/?q=",
+        "Google":    "https://www.google.com/search?q=",
+        "YouTube":   "https://www.youtube.com/results?search_query=",
+        "Wikipedia": "https://it.wikipedia.org/wiki/Speciale:Ricerca?search=",
+        "GitHub":    "https://github.com/search?q="
+    };
+    let currentEngine = localStorage.getItem('foxhome_engine') || "Brave";
+
+    function setEngine(el) {
+        const label = el.textContent.trim().replace(/^[^\s]+\s/,'');
+        // extract emoji + label
+        const text = el.textContent.trim();
+        const parts = text.split(' ');
+        const name = parts.slice(1).join(' ');
+        currentEngine = name;
+        document.getElementById('engine-label').textContent = name;
+        localStorage.setItem('foxhome_engine', name);
+        document.querySelectorAll('.engine-opt').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('engine-menu').classList.remove('open');
+    }
+
+    function toggleEngineMenu(e) {
+        e.stopPropagation();
+        document.getElementById('engine-menu').classList.toggle('open');
+    }
+
+    document.addEventListener('click', () => {
+        document.getElementById('engine-menu').classList.remove('open');
+    });
+
+    // ── Clock ──
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}) + '  ' +
+            now.toLocaleDateString('it-IT', {weekday:'short', day:'numeric', month:'short'});
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── Search ──
+    function doSearch() {
+        const q = document.getElementById('search-q').value.trim();
+        if (!q) return;
+        const url = ENGINES[currentEngine] || ENGINES["Brave"];
+        window.open(url + encodeURIComponent(q), '_blank');
+    }
+
+    // ── Render ──
+    function getFavicon(urlStr) {
+        try {
+            const domain = new URL(urlStr).hostname;
+            return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        } catch { return ''; }
+    }
+
+    function render() {
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+        for (const [cat, links] of Object.entries(myData)) {
+            const section = document.createElement('div');
+            section.className = 'section';
+
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.innerHTML = `
+                <span class="section-title">${escHtml(cat)}</span>
+                <button class="del-section-btn" onclick="deleteSection('${escAttr(cat)}')">✕ Sezione</button>
+            `;
+            section.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.className = 'links-grid';
+
+            links.forEach((link, idx) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'link-wrap';
+                const favicon = getFavicon(link.url);
+                wrap.innerHTML = `
+                    <button class="del-link-btn" onclick="deleteLink('${escAttr(cat)}', ${idx})">✕</button>
+                    <a href="${escAttr(link.url)}" target="_blank" rel="noopener" class="link-item">
+                        <img src="${favicon}" 
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 32 32\\'><rect width=\\'32\\' height=\\'32\\' rx=\\'8\\' fill=\\'%23313244\\'/><text x=\\'16\\' y=\\'22\\' text-anchor=\\'middle\\' font-size=\\'18\\'>🔗</text></svg>'"
+                             alt="${escAttr(link.name)}">
+                        <span class="link-label">${escHtml(link.name)}</span>
+                    </a>`;
+                grid.appendChild(wrap);
+            });
+
+            const addBtn = document.createElement('button');
+            addBtn.className = 'add-link-btn';
+            addBtn.textContent = `+ Aggiungi a ${cat}`;
+            addBtn.onclick = () => openAddModal(cat);
+            grid.appendChild(addBtn);
+
+            section.appendChild(grid);
+            board.appendChild(section);
         }
+        persist();
+    }
 
-        function doSearch() {
-            const engine = document.getElementById('engine').value;
-            const q = document.getElementById('search-q').value;
-            if(q) window.open(engine + encodeURIComponent(q), '_blank');
+    function persist() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(myData));
+    }
+
+    // ── Edit mode ──
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        document.body.classList.toggle('edit-mode', isEditMode);
+        document.getElementById('edit-btn').classList.toggle('active', isEditMode);
+        showToast(isEditMode ? '✏️ Modalità modifica attiva' : '✅ Modifiche salvate');
+    }
+
+    // ── Modals ──
+    function openAddModal(cat) {
+        document.getElementById('modal-title').textContent = `Aggiungi a "${cat}"`;
+        document.getElementById('site-fields').style.display = 'block';
+        document.getElementById('cat-fields').style.display = 'none';
+        document.getElementById('new-name').value = '';
+        document.getElementById('new-url').value = '';
+        document.getElementById('target-cat').value = cat;
+        document.getElementById('overlay').classList.add('open');
+    }
+
+    function openNewCatModal() {
+        document.getElementById('modal-title').textContent = 'Nuova sezione';
+        document.getElementById('site-fields').style.display = 'none';
+        document.getElementById('cat-fields').style.display = 'block';
+        document.getElementById('new-cat-name').value = '';
+        document.getElementById('target-cat').value = '__NEW__';
+        document.getElementById('overlay').classList.add('open');
+    }
+
+    function closeModal(e) {
+        if (e && e.target !== document.getElementById('overlay')) return;
+        document.getElementById('overlay').classList.remove('open');
+    }
+
+    function saveData() {
+        const target = document.getElementById('target-cat').value;
+        if (target === '__NEW__') {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if (!name) { showToast('⚠️ Inserisci un nome'); return; }
+            if (myData[name]) { showToast('⚠️ Sezione già esistente'); return; }
+            myData[name] = [];
+            showToast(`📂 Sezione "${name}" creata`);
+        } else {
+            let name = document.getElementById('new-name').value.trim();
+            let url  = document.getElementById('new-url').value.trim();
+            if (!name || !url) { showToast('⚠️ Compila tutti i campi'); return; }
+            if (!url.match(/^https?:\/\//)) url = 'https://' + url;
+            myData[target].push({ name, url });
+            showToast(`✅ "${name}" aggiunto`);
         }
-
-        function toggleEditMode() { isEditMode = !isEditMode; render(); }
-        function openAddModal(cat) {
-            document.getElementById('modal-title').innerText = "Aggiungi a " + cat;
-            document.getElementById('site-fields').style.display = 'block';
-            document.getElementById('cat-fields').style.display = 'none';
-            document.getElementById('target-cat').value = cat;
-            document.getElementById('admin-box').style.display = 'block';
-        }
-        function openNewCatModal() {
-            document.getElementById('modal-title').innerText = "Crea Nuova Sezione";
-            document.getElementById('site-fields').style.display = 'none';
-            document.getElementById('cat-fields').style.display = 'block';
-            document.getElementById('target-cat').value = "NEW";
-            document.getElementById('admin-box').style.display = 'block';
-        }
-        function closeModal() { document.getElementById('admin-box').style.display = 'none'; }
-
-        function saveData() {
-            const target = document.getElementById('target-cat').value;
-            if(target === "NEW") {
-                const name = document.getElementById('new-cat-name').value;
-                if(name) myData[name] = [];
-            } else {
-                const name = document.getElementById('new-name').value;
-                let url = document.getElementById('new-url').value;
-                if(name && url) {
-                    if(!url.startsWith('http')) url = 'https://' + url;
-                    myData[target].push({name, url});
-                }
-            }
-            render(); closeModal();
-        }
-
-        function deleteLink(cat, idx) {
-            myData[cat].splice(idx, 1);
-            if(myData[cat].length === 0) delete myData[cat];
-            render();
-        }
-
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(myData, null, 2));
-            const a = document.createElement('a'); a.href = dataStr; a.download = "foxhome_backup.json"; a.click();
-        }
-
-        function importJSON(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => { myData = JSON.parse(ev.target.result); render(); };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        function importBrowserBookmarks(e) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const doc = new DOMParser().parseFromString(event.target.result, 'text/html');
-                doc.querySelectorAll('dt h3').forEach(h3 => {
-                    const cat = h3.innerText;
-                    const links = h3.parentElement.querySelectorAll('dd a');
-                    if(links.length > 0) {
-                        if(!myData[cat]) myData[cat] = [];
-                        links.forEach(l => myData[cat].push({ name: l.innerText, url: l.href }));
-                    }
-                });
-                render();
-            };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        function resetAll() { if(confirm("Ripristinare i siti originali?")) { myData = defaultData; render(); } }
-
+        document.getElementById('overlay').classList.remove('open');
         render();
+    }
+
+    // ── Delete ──
+    function deleteLink(cat, idx) {
+        myData[cat].splice(idx, 1);
+        if (myData[cat].length === 0) delete myData[cat];
+        render();
+    }
+
+    function deleteSection(cat) {
+        if (!confirm(`Eliminare la sezione "${cat}"?`)) return;
+        delete myData[cat];
+        render();
+    }
+
+    // ── Export / Import ──
+    function exportJSON() {
+        const json = JSON.stringify(myData, null, 2);
+        const blob = new Blob([json], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'foxhome_backup.json';
+        a.click();
+        showToast('💾 Backup esportato');
+    }
+
+    function importJSON(e) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                myData = JSON.parse(ev.target.result);
+                render();
+                showToast('📂 Dati importati');
+            } catch { showToast('❌ File JSON non valido'); }
+        };
+        reader.readAsText(e.target.files[0]);
+        e.target.value = '';
+    }
+
+    // ── Import browser bookmarks (HTML) ──
+    function importBrowserBookmarks(e) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(ev.target.result, 'text/html');
+            let added = 0;
+            // Handle flat bookmarks in root DL
+            doc.querySelectorAll('dl > dt > h3').forEach(h3 => {
+                const cat = h3.textContent.trim();
+                if (!cat) return;
+                // links inside this folder
+                const nextDL = h3.parentElement.querySelector('dl');
+                if (!nextDL) return;
+                const links = nextDL.querySelectorAll('a');
+                if (links.length === 0) return;
+                if (!myData[cat]) myData[cat] = [];
+                links.forEach(a => {
+                    const href = a.getAttribute('href') || '';
+                    if (!href.startsWith('http')) return;
+                    myData[cat].push({ name: a.textContent.trim() || href, url: href });
+                    added++;
+                });
+            });
+            // Also flat links at root level → "Importati"
+            const rootLinks = doc.querySelectorAll('dl > dt > a');
+            if (rootLinks.length > 0) {
+                if (!myData['Importati']) myData['Importati'] = [];
+                rootLinks.forEach(a => {
+                    const href = a.getAttribute('href') || '';
+                    if (!href.startsWith('http')) return;
+                    myData['Importati'].push({ name: a.textContent.trim() || href, url: href });
+                    added++;
+                });
+            }
+            render();
+            showToast(`⭐ ${added} link importati`);
+        };
+        reader.readAsText(e.target.files[0]);
+        e.target.value = '';
+    }
+
+    // ── Reset ──
+    function resetAll() {
+        if (!confirm('Ripristinare i dati predefiniti? Perderai le personalizzazioni.')) return;
+        myData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        render();
+        showToast('🗑️ Reset completato');
+    }
+
+    // ── Toast ──
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // ── Utils ──
+    function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escAttr(str) {
+        return str.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    }
+
+    // ── Keyboard shortcut: / to focus search ──
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement !== document.getElementById('search-q')) {
+            e.preventDefault();
+            document.getElementById('search-q').focus();
+        }
+        if (e.key === 'Escape') {
+            document.getElementById('overlay').classList.remove('open');
+            document.getElementById('engine-menu').classList.remove('open');
+        }
+    });
+
+    // ── Restore engine label ──
+    document.getElementById('engine-label').textContent = currentEngine;
+    document.querySelectorAll('.engine-opt').forEach(o => {
+        const name = o.textContent.trim().split(' ').slice(1).join(' ');
+        if (name === currentEngine) o.classList.add('active');
+    });
+
+    render();
     </script>
 </body>
 </html>
