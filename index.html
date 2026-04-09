@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Startpage</title>
 
-    <!-- PWA / App icon meta tags -->
     <meta name="application-name" content="Startpage">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,10 +12,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#11111b">
 
-    <!-- PWA Manifest — punta a icon.png nella stessa cartella -->
     <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Startpage%22%2C%22short_name%22%3A%22Startpage%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2311111b%22%2C%22theme_color%22%3A%22%2311111b%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
-    <!-- Favicon e icona Apple touch -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
 
@@ -112,7 +109,6 @@
         }
         .search-engine-btn:hover { background: var(--card2); }
 
-        /* engine dropdown */
         .engine-dropdown {
             position: absolute;
             top: calc(100% + 8px);
@@ -215,7 +211,7 @@
         .links-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         .link-wrap { position: relative; }
@@ -224,10 +220,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 7px; /* MODIFICA QUI: Spazio tra icona e testo */
             text-decoration: none;
             color: var(--subtext);
-            font-size: 0.7rem;
+            font-size: 0.82rem; /* MODIFICA QUI: Grandezza del testo sotto l'icona */
             padding: 8px 4px;
             border-radius: 12px;
             transition: background 0.15s, color 0.15s, transform 0.15s;
@@ -239,15 +235,23 @@
             color: var(--text);
             transform: translateY(-2px);
         }
+        
         .link-item img {
-            width: 36px;
-            height: 36px;
+            width: 48px;  /* MODIFICA QUI: Larghezza icone */
+            height: 48px; /* MODIFICA QUI: Altezza icone */
             border-radius: 10px;
             background: white;
-            padding: 4px;
+            padding: 5px;
             object-fit: contain;
         }
-        .link-label { line-height: 1.2; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        .link-label { 
+            line-height: 1.2; 
+            max-width: 75px; /* MODIFICA QUI: Larghezza massima etichetta prima dei puntini */
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+        }
 
         .del-link-btn {
             position: absolute;
@@ -433,7 +437,6 @@
 
     <div class="dashboard" id="board"></div>
 
-    <!-- Footer toolbar -->
     <div class="footer">
         <button class="tool-btn" id="edit-btn" onclick="toggleEditMode()">✏️ Modifica</button>
         <button class="tool-btn" onclick="openNewCatModal()">＋ Sezione</button>
@@ -446,7 +449,6 @@
         <input type="file" id="fav-in" style="display:none" accept=".html" onchange="importBrowserBookmarks(event)">
     </div>
 
-    <!-- Modal -->
     <div class="overlay" id="overlay" onclick="closeModal(event)">
         <div class="modal" id="modal">
             <h3 id="modal-title">Aggiungi</h3>
@@ -466,32 +468,25 @@
     <div id="toast"></div>
 
     <script>
-    // ── Default data (il file su GitHub non contiene dati personali) ──
+    // ── Default data ──
     const DEFAULT_DATA = {
-        "Dev": [
+        "Dev / Art": [
             {name:"GitHub", url:"https://github.com"},
-            {name:"GitLab", url:"https://gitlab.com"},
             {name:"Gnome Look", url:"https://www.gnome-look.org"},
             {name:"OpenClipart", url:"https://openclipart.org"},
             {name:"DeviantArt", url:"https://www.deviantart.com"}
         ],
         "A.I.": [
+            {name:"Gemini", url:"https://gemini.google.com"},
             {name:"Claude", url:"https://claude.ai"},
             {name:"ChatGPT", url:"https://chatgpt.com"},
-            {name:"DeepSeek", url:"https://chat.deepseek.com"},
-            {name:"Gemini", url:"https://gemini.google.com"},
-            {name:"Perplexity", url:"https://perplexity.ai"},
-            {name:"Mistral", url:"https://chat.mistral.ai"}
+            {name:"Deepl", url:"https://www.deepl.com/it/translator"}   
         ],
-        "Social": [
+        "Social / Email": [
+            {name:"Gmail", url:"https://gmail.com"},
             {name:"YouTube", url:"https://youtube.com"},
-            {name:"Reddit", url:"https://reddit.com"},
             {name:"Instagram", url:"https://instagram.com"},
             {name:"Facebook", url:"https://facebook.com"}
-        ],
-        "Email": [
-            {name:"Gmail", url:"https://gmail.com"},
-            {name:"Tuta", url:"https://tuta.com"}
         ]
     };
 
@@ -511,8 +506,6 @@
     let currentEngine = localStorage.getItem('foxhome_engine') || "Brave";
 
     function setEngine(el) {
-        const label = el.textContent.trim().replace(/^[^\s]+\s/,'');
-        // extract emoji + label
         const text = el.textContent.trim();
         const parts = text.split(' ');
         const name = parts.slice(1).join(' ');
@@ -648,140 +641,63 @@
             if (!name) { showToast('⚠️ Inserisci un nome'); return; }
             if (myData[name]) { showToast('⚠️ Sezione già esistente'); return; }
             myData[name] = [];
-            showToast(`📂 Sezione "${name}" creata`);
         } else {
             let name = document.getElementById('new-name').value.trim();
             let url  = document.getElementById('new-url').value.trim();
-            if (!name || !url) { showToast('⚠️ Compila tutti i campi'); return; }
+            if (!name || !url) { showToast('⚠️ Compila i campi'); return; }
             if (!url.match(/^https?:\/\//)) url = 'https://' + url;
             myData[target].push({ name, url });
-            showToast(`✅ "${name}" aggiunto`);
         }
         document.getElementById('overlay').classList.remove('open');
         render();
     }
 
-    // ── Delete ──
-    function deleteLink(cat, idx) {
-        myData[cat].splice(idx, 1);
-        if (myData[cat].length === 0) delete myData[cat];
-        render();
-    }
+    function deleteLink(cat, idx) { myData[cat].splice(idx, 1); if (myData[cat].length === 0) delete myData[cat]; render(); }
+    function deleteSection(cat) { if (confirm(`Eliminare "${cat}"?`)) { delete myData[cat]; render(); } }
 
-    function deleteSection(cat) {
-        if (!confirm(`Eliminare la sezione "${cat}"?`)) return;
-        delete myData[cat];
-        render();
-    }
-
-    // ── Export / Import ──
     function exportJSON() {
-        const json = JSON.stringify(myData, null, 2);
-        const blob = new Blob([json], {type: 'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'foxhome_backup.json';
-        a.click();
-        showToast('💾 Backup esportato');
+        const blob = new Blob([JSON.stringify(myData, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
     }
 
     function importJSON(e) {
         const reader = new FileReader();
-        reader.onload = ev => {
-            try {
-                myData = JSON.parse(ev.target.result);
-                render();
-                showToast('📂 Dati importati');
-            } catch { showToast('❌ File JSON non valido'); }
-        };
+        reader.onload = ev => { try { myData = JSON.parse(ev.target.result); render(); } catch { alert('Errore JSON'); } };
         reader.readAsText(e.target.files[0]);
-        e.target.value = '';
     }
 
-    // ── Import browser bookmarks (HTML) ──
     function importBrowserBookmarks(e) {
         const reader = new FileReader();
         reader.onload = ev => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(ev.target.result, 'text/html');
-            let added = 0;
-            // Handle flat bookmarks in root DL
+            const doc = new DOMParser().parseFromString(ev.target.result, 'text/html');
             doc.querySelectorAll('dl > dt > h3').forEach(h3 => {
                 const cat = h3.textContent.trim();
-                if (!cat) return;
-                // links inside this folder
                 const nextDL = h3.parentElement.querySelector('dl');
                 if (!nextDL) return;
-                const links = nextDL.querySelectorAll('a');
-                if (links.length === 0) return;
                 if (!myData[cat]) myData[cat] = [];
-                links.forEach(a => {
-                    const href = a.getAttribute('href') || '';
-                    if (!href.startsWith('http')) return;
-                    myData[cat].push({ name: a.textContent.trim() || href, url: href });
-                    added++;
+                nextDL.querySelectorAll('a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href && href.startsWith('http')) myData[cat].push({ name: a.textContent.trim(), url: href });
                 });
             });
-            // Also flat links at root level → "Importati"
-            const rootLinks = doc.querySelectorAll('dl > dt > a');
-            if (rootLinks.length > 0) {
-                if (!myData['Importati']) myData['Importati'] = [];
-                rootLinks.forEach(a => {
-                    const href = a.getAttribute('href') || '';
-                    if (!href.startsWith('http')) return;
-                    myData['Importati'].push({ name: a.textContent.trim() || href, url: href });
-                    added++;
-                });
-            }
             render();
-            showToast(`⭐ ${added} link importati`);
         };
         reader.readAsText(e.target.files[0]);
-        e.target.value = '';
     }
 
-    // ── Reset ──
-    function resetAll() {
-        if (!confirm('Ripristinare i dati predefiniti? Perderai le personalizzazioni.')) return;
-        myData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        render();
-        showToast('🗑️ Reset completato');
-    }
+    function resetAll() { if (confirm('Reset totale?')) { myData = JSON.parse(JSON.stringify(DEFAULT_DATA)); render(); } }
 
-    // ── Toast ──
     function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        clearTimeout(t._timer);
-        t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+        const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2400);
     }
 
-    // ── Utils ──
-    function escHtml(str) {
-        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function escAttr(str) {
-        return str.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    }
+    function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escAttr(str) { return str.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-    // ── Keyboard shortcut: / to focus search ──
     document.addEventListener('keydown', e => {
-        if (e.key === '/' && document.activeElement !== document.getElementById('search-q')) {
-            e.preventDefault();
-            document.getElementById('search-q').focus();
-        }
-        if (e.key === 'Escape') {
-            document.getElementById('overlay').classList.remove('open');
-            document.getElementById('engine-menu').classList.remove('open');
-        }
-    });
-
-    // ── Restore engine label ──
-    document.getElementById('engine-label').textContent = currentEngine;
-    document.querySelectorAll('.engine-opt').forEach(o => {
-        const name = o.textContent.trim().split(' ').slice(1).join(' ');
-        if (name === currentEngine) o.classList.add('active');
+        if (e.key === '/' && document.activeElement !== document.getElementById('search-q')) { e.preventDefault(); document.getElementById('search-q').focus(); }
+        if (e.key === 'Escape') { document.getElementById('overlay').classList.remove('open'); }
     });
 
     render();
