@@ -220,10 +220,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 7px; /* MODIFICA QUI: Spazio tra icona e testo */
+            gap: 7px;
             text-decoration: none;
             color: var(--subtext);
-            font-size: 0.82rem; /* MODIFICA QUI: Grandezza del testo sotto l'icona */
+            font-size: 0.82rem;
             padding: 8px 4px;
             border-radius: 12px;
             transition: background 0.15s, color 0.15s, transform 0.15s;
@@ -237,8 +237,8 @@
         }
         
         .link-item img {
-            width: 48px;  /* MODIFICA QUI: Larghezza icone */
-            height: 48px; /* MODIFICA QUI: Altezza icone */
+            width: 48px;
+            height: 48px;
             border-radius: 10px;
             background: white;
             padding: 5px;
@@ -247,7 +247,7 @@
         
         .link-label { 
             line-height: 1.2; 
-            max-width: 75px; /* MODIFICA QUI: Larghezza massima etichetta prima dei puntini */
+            max-width: 75px;
             overflow: hidden; 
             text-overflow: ellipsis; 
             white-space: nowrap; 
@@ -420,9 +420,8 @@
     <div class="search-wrap">
         <div class="search-box">
             <div class="search-engine-btn" id="engine-btn" onclick="toggleEngineMenu(event)">
-                <span id="engine-label">Brave</span> ▾
+                <span id="engine-label">DuckDuckGo</span> ▾
                 <div class="engine-dropdown" id="engine-menu">
-                    <div class="engine-opt" data-url="https://search.brave.com/search?q=" onclick="setEngine(this)">🦁 Brave</div>
                     <div class="engine-opt" data-url="https://duckduckgo.com/?q=" onclick="setEngine(this)">🦆 DuckDuckGo</div>
                     <div class="engine-opt" data-url="https://www.google.com/search?q=" onclick="setEngine(this)">🔵 Google</div>
                     <div class="engine-opt" data-url="https://www.youtube.com/results?search_query=" onclick="setEngine(this)">▶️ YouTube</div>
@@ -496,14 +495,15 @@
 
     // ── Search engine state ──
     const ENGINES = {
-        "Brave":     "https://search.brave.com/search?q=",
+        // MODIFICATO: Rimossa voce Brave, aggiunta DuckDuckGo
         "DuckDuckGo":"https://duckduckgo.com/?q=",
         "Google":    "https://www.google.com/search?q=",
         "YouTube":   "https://www.youtube.com/results?search_query=",
         "Wikipedia": "https://it.wikipedia.org/wiki/Speciale:Ricerca?search=",
         "GitHub":    "https://github.com/search?q="
     };
-    let currentEngine = localStorage.getItem('foxhome_engine') || "Brave";
+    // MODIFICATO: Predefinito ora è DuckDuckGo
+    let currentEngine = localStorage.getItem('foxhome_engine') || "DuckDuckGo";
 
     function setEngine(el) {
         const text = el.textContent.trim();
@@ -540,7 +540,8 @@
     function doSearch() {
         const q = document.getElementById('search-q').value.trim();
         if (!q) return;
-        const url = ENGINES[currentEngine] || ENGINES["Brave"];
+        // MODIFICATO: Fallback su DuckDuckGo se il motore salvato non esiste
+        const url = ENGINES[currentEngine] || ENGINES["DuckDuckGo"];
         window.open(url + encodeURIComponent(q), '_blank');
     }
 
